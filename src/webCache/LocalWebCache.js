@@ -19,23 +19,27 @@ class LocalWebCache extends WebCache {
     }
 
     async resolve(version) {
-        const filePath = path.join(this.path, `${version??this.version}.html`);
+        let version_v = version || this.version;
+        const filePath = path.join(this.path, `${version_v}.html`);
         
         try {
             return fs.readFileSync(filePath, 'utf-8');
         }
         catch (err) {
-            if (this.strict) throw new VersionResolveError(`Couldn't load version ${version??this.version} from the cache`);
+            let version_v = version || this.version;
+            if (this.strict) throw new VersionResolveError(`Couldn't load version ${version_v} from the cache`);
             return null;
         }
     }
 
     async persist(indexHtml) {
         // extract version from index (e.g. manifest-2.2206.9.json -> 2.2206.9)
-        const version = indexHtml.match(/manifest-([\d\\.]+)\.json/)[1];
-        if(!version) return;
-   
-        const filePath = path.join(this.path, `${version}.html`);
+        // const version = indexHtml.match(/manifest-([\d\\.]+)\.json/);
+        // if(!version) return;
+
+        let version_v = this.version;
+
+        const filePath = path.join(this.path, `${version_v}.html`);
         fs.mkdirSync(this.path, { recursive: true });
         fs.writeFileSync(filePath, indexHtml);
     }
